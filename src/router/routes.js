@@ -1,4 +1,3 @@
-
 const routes = [
   {
     path: '/',
@@ -30,11 +29,12 @@ const routes = [
     path: '/admin',
     component: () => import('layouts/AdminLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: 'home', component: () => import('pages/IndexPage.vue') },
+      { path: '', component: () => import('pages/AdminPage.vue') },
+      { path: 'home', component: () => import('pages/AdminPage.vue') },
       { path: 'exam-data', component: () => import('pages/ExamDataPage.vue') },
-      { path: 'results', component: () => import('pages/ExamResultsPage.vue') },
-      { path: 'students', component: () => import('pages/MhsDataPage.vue') }
+      { path: 'exam-data/add', component: () => import('pages/AddExamDataPage.vue') },
+      { path: 'results-data', component: () => import('pages/ExamResultsPage.vue') },
+      { path: 'students-data', component: () => import('pages/MhsDataPage.vue') }
     ]
   },
 
