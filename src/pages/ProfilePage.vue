@@ -17,6 +17,7 @@
       <q-card-section>
         <strong>Name</strong>
         {{ currentUser.name }}
+        {{ currentUser.roles[0] }}
       </q-card-section>
 
       <q-card-section>
