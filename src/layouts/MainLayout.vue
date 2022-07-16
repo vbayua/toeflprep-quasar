@@ -23,13 +23,30 @@
         <q-btn
           flat
           padding="2px 10px"
-          icon-right="logout"
-          label="Logout"
-          @click="logout"
+          icon-right="account_circle"
+          label="Account"
         >
-          <q-tooltip anchor="center left">
-            Sign Out
-          </q-tooltip>
+          <q-menu>
+            <div class="row no-wrap q-pa-md">
+              <div class="column items-center">
+                <q-avatar size="72px">
+                  <q-icon name="account_circle" />
+                </q-avatar>
+
+                <div class="text-subtitle1">
+                  {{ currentUser.name }}
+                </div>
+
+                <q-btn
+                  color="primary"
+                  label="Logout"
+                  push
+                  size="md"
+                  @click="logout"
+                />
+              </div>
+            </div>
+          </q-menu>
         </q-btn>
       </q-toolbar>
     </q-header>
@@ -74,7 +91,7 @@
             </q-item-section>
 
             <q-item-section>
-              Data Ujian
+              TOEFL Test
             </q-item-section>
           </q-item>
 
@@ -87,22 +104,7 @@
             </q-item-section>
 
             <q-item-section>
-              Data Hasil
-            </q-item-section>
-          </q-item>
-
-          <q-separator />
-
-          <q-item
-            v-ripple
-            clickable
-          >
-            <q-item-section avatar>
-              <q-icon name="groups" />
-            </q-item-section>
-
-            <q-item-section>
-              Data Mahasiswa
+              Hasil Test
             </q-item-section>
           </q-item>
         </q-list>
@@ -128,6 +130,11 @@ export default defineComponent({
     return {
       drawer: ref(false),
       miniState: ref(true)
+    }
+  },
+  computed: {
+    currentUser () {
+      return this.$store.state.auth.user
     }
   },
   methods: {

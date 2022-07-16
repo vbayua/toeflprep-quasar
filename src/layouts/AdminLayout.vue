@@ -23,13 +23,32 @@
         <q-btn
           flat
           padding="2px 10px"
-          icon-right="logout"
-          label="Logout"
-          @click="logout"
+          icon-right="admin_panel_settings"
         >
-          <q-tooltip anchor="center left">
-            Sign Out
-          </q-tooltip>
+          <div class="text-left q-mr-sm">
+            {{ currentUser.name }}
+          </div>
+          <q-menu>
+            <div class="row no-wrap q-pa-md">
+              <div class="column items-center">
+                <q-avatar size="72px">
+                  <q-icon name="account_circle" />
+                </q-avatar>
+
+                <div class="text-subtitle1">
+                  {{ currentUser.name }}
+                </div>
+
+                <q-btn
+                  color="primary"
+                  label="Logout"
+                  push
+                  size="md"
+                  @click="logout"
+                />
+              </div>
+            </div>
+          </q-menu>
         </q-btn>
       </q-toolbar>
     </q-header>
@@ -53,13 +72,14 @@
           <q-item
             v-ripple
             clickable
+            to="/admin"
           >
             <q-item-section avatar>
               <q-icon name="home" />
             </q-item-section>
 
             <q-item-section>
-              Home
+              Home {{ currentUserAdmin }}
             </q-item-section>
           </q-item>
 
@@ -68,6 +88,7 @@
           <q-item
             v-ripple
             clickable
+            to="/admin/exam-data"
           >
             <q-item-section avatar>
               <q-icon name="assignment" />
@@ -81,6 +102,7 @@
           <q-item
             v-ripple
             clickable
+            to="/admin/results-data"
           >
             <q-item-section avatar>
               <q-icon name="assignment_turned_in" />
@@ -96,6 +118,7 @@
           <q-item
             v-ripple
             clickable
+            to="/admin/students-data"
           >
             <q-item-section avatar>
               <q-icon name="groups" />
@@ -128,6 +151,16 @@ export default defineComponent({
     return {
       drawer: ref(false),
       miniState: ref(true)
+    }
+  },
+  computed: {
+    currentUser () {
+      return this.$store.state.auth.user
+    }
+  },
+  mounted () {
+    if (!this.currentUser && this.currentUser.roles[0] !== 'admin') {
+      this.$router.push('/auth/login')
     }
   },
   methods: {
