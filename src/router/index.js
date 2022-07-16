@@ -30,8 +30,6 @@ export default route(function (/* { store, ssrContext } */) {
     const publicPages = ['/auth/login', '/auth/register', '/home']
     const authRequired = !publicPages.includes(to.path)
     const loggedIn = localStorage.getItem('user')
-    // trying to access a restricted page + not logged in
-    // redirect to login page
     if (authRequired && !loggedIn) {
       next('/auth/login')
     } else {
