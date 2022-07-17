@@ -58,14 +58,6 @@
               <q-btn
                 flat
                 round
-                color="primary"
-                icon="edit"
-                dense
-              />
-
-              <q-btn
-                flat
-                round
                 color="negative"
                 icon="delete"
                 dense
