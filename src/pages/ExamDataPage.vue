@@ -2,19 +2,21 @@
   <q-page
     padding
   >
+    <AddExamComponentVue v-model="prompt" />
     <div class="row q-mt-md q-ml-auto">
       <q-table
         title="Data Ujian TOEFL"
         :rows="rows"
         :columns="columns"
-        row-key="name"
+        row-key="title"
         class="full-width"
+        style="min-height: 100vh"
       >
         <template #top-right>
           <q-btn
             color="primary"
             label="Tambah Data Ujian"
-            to="/admin/exam-data/add"
+            @click="prompt = true"
           />
         </template>
         <template #body="items">
@@ -23,45 +25,65 @@
               key="title"
               :props="items"
             >
-              {{ items.row.name }}
+              {{ items.row.title }}
             </q-td>
             <q-td
-              key="calories"
+              key="status"
               :props="items"
             >
-              {{ items.row.calories }}
+              {{ items.row.status }}
             </q-td>
-            <q-td
-              key="fat"
-              :props="items"
-            >
-              {{ items.row.fat }}
-            </q-td>
-            <q-td
-              key="carbs"
-              :props="items"
-            >
-              {{ items.row.carbs }}
-            </q-td>
+
             <q-td
               key="actions"
               :props="items"
             >
+              <!-- <router-link
+                :to="{ path: '/admin/exam-data', params: { id: items.row._id }}"
+              > -->
               <q-btn
                 flat
                 dense
-                to="/admin/exam-data/soal/"
                 color="dark"
                 icon-right="post_add"
                 label="Data Soal"
+                @click="toDataSoal(items.row._id)"
               />
+              <!-- BITCH -->
+              <!-- </router-link> -->
               <q-btn
                 flat
                 round
                 color="negative"
                 icon="delete"
                 dense
+                @click="confirm = true"
               />
+              <q-dialog
+                v-model="confirm"
+                persistent
+              >
+                <q-card>
+                  <q-card-section class="row items-center">
+                    <span class="q-ml-sm">Are you sure?</span>
+                  </q-card-section>
+                  <q-card-actions align="right">
+                    <q-btn
+                      v-close-popup
+                      flat
+                      label="Cancel"
+                      color="primary"
+                    />
+                    <q-btn
+                      v-close-popup
+                      flat
+                      label="YES"
+                      color="primary"
+                      @click="deleteExam(items.row._id)"
+                    />
+                  </q-card-actions>
+                </q-card>
+              </q-dialog>
             </q-td>
           </q-tr>
         </template>
@@ -94,25 +116,10 @@ const columns = [
     field: 'title'
   },
   {
-    name: 'calories',
+    name: 'status',
     align: 'right',
-    label: 'Calories',
-    field: 'calories',
-    sortable: true
-  },
-  {
-    name: 'fat',
-    align: 'right',
-    label: 'Fat',
-    field: 'fat',
-    sortable: true
-  },
-  {
-    name: 'carbs',
-    align: 'right',
-    label: 'Carbs',
-    field: 'carbs',
-    sortable: true
+    label: 'Status',
+    field: 'status'
   },
   {
     name: 'actions',
@@ -121,33 +128,61 @@ const columns = [
     field: 'actions'
   }
 ]
-const rows = [
-  {
-    name: 'Frozen Yogurt',
-    calories: 159,
-    fat: 6.0,
-    carbs: 24
-  },
-  {
-    name: 'Ice cream sandwich',
-    calories: 237,
-    fat: 9.0,
-    carbs: 37
-  },
-  {
-    name: 'Ice scream sandwich',
-    calories: 237,
-    fat: 9.0,
-    carbs: 37
-  }
-]
-
+import { ref } from 'vue'
+import AddExamComponentVue from 'src/components/AddExamComponent.vue'
 export default {
   name: 'ExamData',
+  components: {
+    AddExamComponentVue
+  },
   setup () {
     return {
-      columns,
-      rows
+      prompt: ref(false),
+      confirm: ref(false),
+      title: ref(false),
+      columns
+    }
+  },
+  data () {
+    return {
+      rows: ref([])
+    }
+  },
+  computed: {
+    exams () {
+      return this.$store.state.exam
+    }
+  },
+  mounted () {
+    this.$store.dispatch('admin/getAllExam').then(response => {
+      console.log(response.data)
+      this.rows = response.data.exams
+    })
+  },
+  methods: {
+    toDataSoal (examId) {
+      this.$router.push({
+        name: 'datasoal',
+        params: { id: examId }
+      })
+    },
+    async deleteExam (examId) {
+      try {
+        this.$q.loading.show({
+          message: 'Deleting'
+        })
+        console.log(examId)
+        await this.$store.dispatch('admin/deleteExam', examId)
+      } catch (error) {
+        this.$q.loading.hide()
+        this.$q.notify({
+          message: `Error : ${error.message}`,
+          color: 'negative'
+        })
+      } finally {
+        this.$q.loading.hide()
+        location.reload()
+      }
     }
   }
 }

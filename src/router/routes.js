@@ -33,6 +33,7 @@ const routes = [
       { path: 'home', component: () => import('pages/AdminPage.vue') },
       { path: 'exam-data', component: () => import('pages/ExamDataPage.vue') },
       { path: 'exam-data/add', component: () => import('pages/AddExamDataPage.vue') },
+      { path: 'exam-data/:id', name: 'datasoal', component: () => import('pages/DataSoalPage.vue') },
       { path: 'results-data', component: () => import('pages/ExamResultsPage.vue') },
       { path: 'students-data', component: () => import('pages/MhsDataPage.vue') }
     ]
