@@ -14,8 +14,8 @@ class AdminService {
     return await api.post('/admin/exam/create', examData, { headers: authHeader() })
   }
 
-  async updateExam (examData) {
-    return await api.put(`/admin/exam/update?id=${examData._id}`, examData, { headers: authHeader() })
+  async updateExam (examId, examData) {
+    return await api.put(`/admin/exam/update?id=${examId}`, examData, { headers: authHeader() })
   }
 
   async deleteExam (examData) {
@@ -23,7 +23,7 @@ class AdminService {
   }
 
   async getQuestionsInExam (examData) {
-    return await api.get(`/admin/exam/${examData._id}`, { headers: authHeader() })
+    return await api.get(`/admin/exam/${examData}`, { headers: authHeader() })
   }
 
   async getExamInQuestions (examId) {

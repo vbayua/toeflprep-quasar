@@ -83,27 +83,27 @@ const columns = [
   {
     name: 'title',
     align: 'left',
-    label: 'Test Title',
+    label: 'Title',
     field: 'title'
   },
   {
     name: 'calories',
     align: 'right',
-    label: 'Calories',
+    label: 'Date',
     field: 'calories',
     sortable: true
   },
   {
     name: 'fat',
     align: 'right',
-    label: 'Fat',
+    label: 'Raw Score',
     field: 'fat',
     sortable: true
   },
   {
     name: 'carbs',
     align: 'right',
-    label: 'Carbs',
+    label: 'Scaled Score',
     field: 'carbs',
     sortable: true
   },
@@ -114,26 +114,7 @@ const columns = [
     field: 'actions'
   }
 ]
-const rows = [
-  {
-    name: 'Frozen Yogurt',
-    calories: 159,
-    fat: 6.0,
-    carbs: 24
-  },
-  {
-    name: 'Ice cream sandwich',
-    calories: 237,
-    fat: 9.0,
-    carbs: 37
-  },
-  {
-    name: 'Ice scream sandwich',
-    calories: 237,
-    fat: 9.0,
-    carbs: 37
-  }
-]
+const rows = []
 
 export default {
   name: 'ExamData',

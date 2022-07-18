@@ -102,8 +102,10 @@ export default {
     }
   },
   created () {
-    if (this.loggedIn) {
+    if (this.loggedIn && this.currentUser.roles[0] === 'admin') {
       this.$router.push('/home')
+    } else {
+      this.$router.push('/admin/')
     }
   },
 

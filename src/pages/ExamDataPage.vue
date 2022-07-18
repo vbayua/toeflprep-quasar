@@ -47,10 +47,20 @@
                 color="dark"
                 icon-right="post_add"
                 label="Data Soal"
-                @click="toDataSoal(items.row._id)"
+                :to="{name: 'datasoal', params: {id: items.row._id}}"
               />
               <!-- BITCH -->
               <!-- </router-link> -->
+
+              <q-btn
+                flat
+                round
+                color="secondary"
+                icon="edit"
+                dense
+                @click.prevent="updatePrompt = true; onUpdateClick(items.row.title)"
+              />
+
               <q-btn
                 flat
                 round
@@ -59,6 +69,7 @@
                 dense
                 @click="confirm = true"
               />
+
               <q-dialog
                 v-model="confirm"
                 persistent
@@ -74,6 +85,7 @@
                       label="Cancel"
                       color="primary"
                     />
+
                     <q-btn
                       v-close-popup
                       flat
@@ -82,6 +94,49 @@
                       @click="deleteExam(items.row._id)"
                     />
                   </q-card-actions>
+                </q-card>
+              </q-dialog>
+
+              <q-dialog
+                v-model="updatePrompt"
+                persistent
+              >
+                <q-card style="min-width: 350px">
+                  <q-form
+                    class="q-gutter-md"
+                    @submit.prevent="updateExam(items.row._id)"
+                  >
+                    <q-card-section>
+                      <div class="text-h6">
+                        Edit Test Title
+                      </div>
+                    </q-card-section>
+                    <q-card-section class="q-pt-none">
+                      <q-input
+                        v-model="titleToUpdate"
+                        autofocus
+                        dense
+                        type="text"
+                        label="Test Title"
+                      />
+                    </q-card-section>
+                    <q-card-actions
+                      align="right"
+                      class="text-primary"
+                    >
+                      <q-btn
+                        v-close-popup
+                        flat
+                        label="Cancel"
+                      />
+                      <q-btn
+                        v-close-popup
+                        type="submit"
+                        flat
+                        label="Save"
+                      />
+                    </q-card-actions>
+                  </q-form>
                 </q-card>
               </q-dialog>
             </q-td>
@@ -113,7 +168,8 @@ const columns = [
     name: 'title',
     align: 'left',
     label: 'Test Title',
-    field: 'title'
+    field: 'title',
+    sortable: true
   },
   {
     name: 'status',
@@ -138,8 +194,10 @@ export default {
   setup () {
     return {
       prompt: ref(false),
+      updatePrompt: ref(false),
       confirm: ref(false),
       title: ref(false),
+      titleToUpdate: ref(''),
       columns
     }
   },
@@ -171,7 +229,6 @@ export default {
         this.$q.loading.show({
           message: 'Deleting'
         })
-        console.log(examId)
         await this.$store.dispatch('admin/deleteExam', examId)
       } catch (error) {
         this.$q.loading.hide()
@@ -180,7 +237,49 @@ export default {
           color: 'negative'
         })
       } finally {
+        await this.$q.loading.hide()
+        this.$q.notify({
+          message: 'Delete successful',
+          color: 'positive'
+        })
+        location.reload()
+      }
+    },
+    async onUpdateClick (title) {
+      this.titleToUpdate = title
+    },
+    async updateExam (examId) {
+      try {
+        if (!this.titleToUpdate) {
+          this.$q.notify({
+            message: 'Title Cannot Be Empty!',
+            color: 'negative'
+          })
+          return this.$q.loading.hide()
+        } else {
+          this.$q.loading.show({
+            message: 'Updating Test Title'
+          })
+          const data = {
+            _id: examId,
+            title: this.titleToUpdate,
+            status: 'inactive'
+          }
+          await this.$store.dispatch('admin/updateExam', data)
+        }
+        // console.log(data)
+      } catch (error) {
         this.$q.loading.hide()
+        this.$q.notify({
+          message: `Error : ${error.message}`,
+          color: 'negative'
+        })
+      } finally {
+        await this.$q.loading.hide()
+        await this.$q.notify({
+          message: 'Update successful',
+          color: 'positive'
+        })
         location.reload()
       }
     }

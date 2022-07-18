@@ -5,7 +5,7 @@
   >
     <div>
       <h2>Home</h2>
-      <h3>{{ content }}</h3>
+      <h3>Mahasiswa</h3>
     </div>
   </q-page>
 </template>

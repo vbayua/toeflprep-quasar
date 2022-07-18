@@ -31,8 +31,28 @@ export const admin = {
         }
       )
     },
+    updateExam ({ commit }, examData) {
+      return AdminService.updateExam(examData._id, examData).then(
+        exam => {
+          return Promise.resolve(exam)
+        },
+        error => {
+          return Promise.reject(error)
+        }
+      )
+    },
     deleteExam ({ commit }, data) {
       return AdminService.deleteExam(data).then(
+        exam => {
+          return Promise.resolve(exam)
+        },
+        error => {
+          return Promise.reject(error)
+        }
+      )
+    },
+    getExamWithDataSoal ({ commit }, data) {
+      return AdminService.getQuestionsInExam(data).then(
         exam => {
           return Promise.resolve(exam)
         },
@@ -52,6 +72,9 @@ export const admin = {
     createExam (state, exam) {
       state.message = 'Success create new exam '
       state.message += exam
+    },
+    examWithDataSoal (state, exam) {
+      state.message = 'Exam With Data Soal'
     }
   }
 }
