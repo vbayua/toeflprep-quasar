@@ -1,5 +1,8 @@
 <template>
-  <q-page padding>
+  <q-page
+    padding
+    class="flex flex-center"
+  >
     <!-- content -->
     <div class="row q-gutter-md q-mr-sm">
       <q-btn
