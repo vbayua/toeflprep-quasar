@@ -1,54 +1,20 @@
 <template>
   <q-page
     padding
-    class="row"
+    class="column"
   >
-    <!-- content -->
     <div class="full-width">
-      <q-card class="column">
-        <div class="q-mt-md text-h5">
-          <span>
-            Data Soal Ujian
-          </span>
-        </div>
-        <q-separator
-          inset
-          dark
-        />
-        <q-form
-          class="q-gutter-md"
-          @submit="onSubmit"
-          @reset="onReset"
-        >
-          <q-card-section>
-            <q-input
-              v-model="testTitle"
-              type="text"
-              label="Title"
-            />
-          </q-card-section>
-          <q-card-section>
-            <div>
-              <q-btn
-                label="Submit"
-                type="submit"
-                color="primary"
-              />
-              <q-btn
-                label="Back"
-                to="/admin/exam-data"
-                color="primary"
-                flat
-                class="q-ml-sm"
-              />
-            </div>
-          </q-card-section>
-        </q-form>
+      <q-card>
+        <q-card-section>
+          {{exam.title}}
+        </q-card-section>
+        <q-card-section>
+          {{exam.status}}
+        </q-card-section>
       </q-card>
     </div>
-
     <!-- Table Data Soal -->
-    <div class="q-mt-md">
+    <div class="q-mt-md full-width">
       <q-table
         title="Data Soal"
         :rows="rows"
@@ -57,31 +23,62 @@
         class="full-width"
         dense
       >
+        <template #top-right>
+          <q-select
+            v-model="selectType"
+            :options="options"
+            label="Type"
+            filled
+          />
+          <q-input
+            v-model="filter"
+            borderless
+            dense
+            debounce="300"
+            placeholder="Search"
+          >
+            <template #append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
         <template #body="items">
           <q-tr :props="items">
             <q-td
-              key="title"
+              key="question"
               :props="items"
             >
-              {{ items.row.name }}
+              {{ items.row.question }}
             </q-td>
             <q-td
-              key="calories"
+              key="type"
               :props="items"
             >
-              {{ items.row.calories }}
+              {{ items.row.type }}
             </q-td>
             <q-td
-              key="fat"
+              key="img"
               :props="items"
             >
-              {{ items.row.fat }}
+              {{ items.row.imgUrl }}
             </q-td>
             <q-td
-              key="carbs"
+              key="audio"
               :props="items"
             >
-              {{ items.row.carbs }}
+              {{ items.row.audioUrl }}
+            </q-td>
+            <q-td
+              key="questionPart"
+              :props="items"
+            >
+              {{ items.row.questionPart }}
+            </q-td>
+            <q-td
+              key="correctAnswer"
+              :props="items"
+            >
+              {{ items.row.correctAnswer }}
             </q-td>
             <q-td
               key="actions"
@@ -105,6 +102,12 @@
             </q-td>
           </q-tr>
         </template>
+        <template #bottom>
+          <q-btn
+            color="primary"
+            label="Tambah Data Soal"
+          />
+        </template>
         <template #no-data="{ icon, message, filter }">
           <div class="full-width row flex-center text-black q-gutter-sm">
             <q-icon
@@ -126,34 +129,44 @@
 </template>
 
 <script>
-
+import { ref } from 'vue'
 const columns = [
   {
-    name: 'title',
+    name: 'question',
     align: 'left',
     label: 'Test Title',
     field: 'title'
   },
   {
-    name: 'calories',
+    name: 'type',
     align: 'right',
-    label: 'Calories',
-    field: 'calories',
+    label: 'Type',
+    field: 'type',
     sortable: true
   },
   {
-    name: 'fat',
+    name: 'img',
     align: 'right',
-    label: 'Fat',
-    field: 'fat',
-    sortable: true
+    label: 'img',
+    field: 'img'
   },
   {
-    name: 'carbs',
+    name: 'audio',
     align: 'right',
-    label: 'Carbs',
-    field: 'carbs',
-    sortable: true
+    label: 'audio',
+    field: 'audio'
+  },
+  {
+    name: 'questionPart',
+    align: 'right',
+    label: 'Question Part',
+    field: 'questionPart'
+  },
+  {
+    name: 'correctAnswer',
+    align: 'right',
+    label: 'Correct Answer',
+    field: 'correctAnswer'
   },
   {
     name: 'actions',
@@ -162,35 +175,28 @@ const columns = [
     field: 'actions'
   }
 ]
-const rows = [
-  {
-    name: 'Frozen Yogurt',
-    calories: 159,
-    fat: 6.0,
-    carbs: 24
-  },
-  {
-    name: 'Ice cream sandwich',
-    calories: 237,
-    fat: 9.0,
-    carbs: 37
-  },
-  {
-    name: 'Ice scream sandwich',
-    calories: 237,
-    fat: 9.0,
-    carbs: 37
-  }
-]
+
 export default {
   name: 'DataSoalPage',
   setup () {
     return {
-      columns,
-      rows
+      columns
+    }
+  },
+  data () {
+    return {
+      rows: ref([]),
+      exam: ref('')
     }
   },
   mounted () {
+    const id = this.$route.params.id
+    this.$store.dispatch('admin/getExamWithDataSoal', id).then(response => {
+      this.exam = response.data.exam
+      console.log(this.exam)
+    }).catch(error => {
+      console.log(error)
+    })
     console.log(this.$route.params)
   }
 }
