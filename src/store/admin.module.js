@@ -63,7 +63,7 @@ export const admin = {
     },
 
     addQuestion ({ commit }, data) {
-      return AdminService.addQuestions(data).then(
+      return AdminService.addQuestions(data.testExam, data).then(
         response => {
           return Promise.resolve(response)
         },

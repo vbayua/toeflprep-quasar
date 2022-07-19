@@ -6,35 +6,61 @@
     <div class="full-width">
       <q-card>
         <q-card-section>
+          <q-btn
+            flat
+            color="primary"
+            label="Back"
+            icon="arrow_back"
+            to="/admin/exam-data"
+          />
+        </q-card-section>
+        <q-card-section>
           {{ exam.title }}
         </q-card-section>
         <q-card-section>
           {{ exam.status }}
         </q-card-section>
+        <div v-if="questionData != []">
+          <q-card-actions
+            align="right"
+          >
+            <q-btn
+              flat
+              color="secondary"
+              label="Set as Active"
+            />
+          </q-card-actions>
+        </div>
       </q-card>
     </div>
     <!-- Table Data Soal -->
+    <div class="q-mt-md text-right">
+      <q-btn
+        color="primary"
+        label="Tambah Data Soal"
+        :to="{ name: 'questionform', params: { id: exam._id }}"
+      />
+    </div>
     <div class="q-mt-md full-width">
       <q-table
-        title="Data Soal"
-        :rows="rows"
+        title="Questions"
+        :rows="questionData"
         :columns="columns"
-        row-key="name"
-        class="full-width"
-        dense
+        :filter="filter"
+        row-key="title"
       >
         <template #top-right>
-          <q-btn
-            color="primary"
-            label="Tambah Data Soal"
-            :to="{ name: 'questionform', params: { id: exam._id }}"
-          />
-          <q-select
-            v-model="selectType"
-            :options="options"
-            label="Type"
-            filled
-          />
+          <q-input
+            v-model="filter"
+            borderless
+            dense
+            debounce="300"
+            placeholder="Search"
+          >
+            <template #append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
         </template>
         <template #body="items">
           <q-tr :props="items">
@@ -44,35 +70,41 @@
             >
               {{ items.row.question }}
             </q-td>
+
             <q-td
-              key="type"
+              key="question_id"
               :props="items"
             >
-              {{ items.row.type }}
+              {{ items.row._id }}
             </q-td>
             <q-td
-              key="img"
+              key="questionType"
               :props="items"
             >
-              {{ items.row.imgUrl }}
+              {{ items.row.questionType }}
             </q-td>
-            <q-td
-              key="audio"
-              :props="items"
-            >
-              {{ items.row.audioUrl }}
-            </q-td>
+
             <q-td
               key="questionPart"
               :props="items"
             >
               {{ items.row.questionPart }}
             </q-td>
+
             <q-td
               key="correctAnswer"
               :props="items"
             >
               {{ items.row.correctAnswer }}
+            </q-td>
+            <q-td
+              key="showAnswerOptions"
+              :props="items"
+            >
+              {{ items.row.answerOptions[0] }} |
+              {{ items.row.answerOptions[1] }} |
+              {{ items.row.answerOptions[2] }} |
+              {{ items.row.answerOptions[3] }}
             </q-td>
             <q-td
               key="actions"
@@ -81,7 +113,7 @@
               <q-btn
                 flat
                 round
-                color="primary"
+                color="secondary"
                 icon="edit"
                 dense
               />
@@ -96,43 +128,6 @@
             </q-td>
           </q-tr>
         </template>
-        <template #bottom>
-          <q-input
-            v-model="filter"
-            borderless
-            dense
-            debounce="300"
-            placeholder="Search"
-          >
-            <template #append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </template>
-        <template #no-data="{ icon, message, filter }">
-          <div class="full-width row flex-center text-black q-gutter-sm">
-            <q-icon
-              size="2em"
-              name="sentiment_dissatisfied"
-            />
-            <span>
-              {{ message }}
-            </span>
-            <q-icon
-              size="2em"
-              :name="filter ? 'filter_b_and_w' : icon"
-            />
-          </div>
-        </template>
-        <q-inner-loading
-          :showing="visible"
-          label="Fetching questions"
-        >
-          <q-spinner-gears
-            size="50px"
-            color="primary"
-          />
-        </q-inner-loading>
       </q-table>
     </div>
   </q-page>
@@ -144,53 +139,59 @@ const columns = [
   {
     name: 'question',
     align: 'left',
-    label: 'Test Title',
-    field: 'title'
-  },
-  {
-    name: 'type',
-    align: 'right',
-    label: 'Type',
-    field: 'type',
+    label: 'Question',
+    field: 'question',
     sortable: true
   },
   {
-    name: 'img',
+    name: 'question_id',
     align: 'right',
-    label: 'img',
-    field: 'img'
+    label: 'QuestionID',
+    field: '_id',
+    sortable: true
+
   },
   {
-    name: 'audio',
+    name: 'questionType',
     align: 'right',
-    label: 'audio',
-    field: 'audio'
+    label: 'Type',
+    field: 'questionType',
+    sortable: true
   },
   {
     name: 'questionPart',
     align: 'right',
-    label: 'Question Part',
-    field: 'questionPart'
+    label: 'Part',
+    field: 'questionPart',
+    sortable: true
+
   },
   {
     name: 'correctAnswer',
     align: 'right',
     label: 'Correct Answer',
-    field: 'correctAnswer'
+    field: 'correctAnswer',
+    sortable: true
+  },
+  {
+    name: 'showAnswerOptions',
+    align: 'right',
+    label: 'Answer Options',
+    field: 'answerOptions'
   },
   {
     name: 'actions',
-    align: 'center',
-    label: 'Actions',
-    field: 'actions'
+    align: 'right',
+    label: 'Actions'
   }
 ]
-
 export default {
   name: 'DataSoalPage',
   setup () {
     const visible = ref(false)
     return {
+      showAnswers: ref(false),
+      filter: ref(''),
       columns,
       visible
     }
@@ -202,20 +203,27 @@ export default {
       questions: ref([])
     }
   },
+  computed: {
+    questionData () {
+      return this.exam.questions
+    }
+  },
   mounted () {
     const id = this.$route.params.id
     this.$store.dispatch('admin/getExamWithDataSoal', id).then(response => {
       this.exam = response.data.exam
+      this.questions = response.data.exam.questions
       this.visible = true
-      this.questions.push(response.data.exam.questions)
     }).catch(error => {
       console.log(error)
     }).finally(() => {
       this.visible = false
     })
-    console.log(this.questions)
   },
   methods: {
+    showOptions () {
+      this.showAnswers = true
+    }
   }
 }
 </script>

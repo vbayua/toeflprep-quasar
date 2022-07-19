@@ -165,8 +165,21 @@ export default defineComponent({
   },
   methods: {
     async logout () {
-      await this.$store.dispatch('auth/logout')
-      await this.$router.push('/')
+      try {
+        this.$q.loading.show({
+          message: 'Signing out'
+        })
+        await this.$store.dispatch('auth/logout')
+        await this.$router.push('/')
+      } catch (error) {
+        this.$q.loading.hide()
+        this.$q.notify({
+          message: error,
+          color: 'negative'
+        })
+      } finally {
+        this.$q.loading.hide()
+      }
     }
   }
 })

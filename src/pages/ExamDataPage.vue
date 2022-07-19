@@ -38,9 +38,6 @@
               key="actions"
               :props="items"
             >
-              <!-- <router-link
-                :to="{ path: '/admin/exam-data', params: { id: items.row._id }}"
-              > -->
               <q-btn
                 flat
                 dense
@@ -49,7 +46,6 @@
                 label="Data Soal"
                 :to="{ name: 'datasoal', params: {id: items.row._id}}"
               />
-              <!-- </router-link> -->
 
               <q-btn
                 flat

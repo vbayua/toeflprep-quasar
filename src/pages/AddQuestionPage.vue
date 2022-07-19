@@ -154,10 +154,11 @@ export default {
       options: [
         'Listening Comprehension', 'Structure and Written', 'Reading Comprehension'
       ],
-      questionPart: ref(null),
+      questionPart: ref(''),
       correctAnswer: ref(''),
       partOptions: ['A', 'B', 'C'],
       // option: ref(''),
+      audio: ref(''),
       option1: ref('Option 1'),
       option2: ref('Option 2'),
       option3: ref('Option 3'),
@@ -191,19 +192,25 @@ export default {
         this.$q.loading.show({
           message: 'Creating new Question'
         })
+        const ansopts = [...this.answerOptions]
         const data = {
           question: this.question,
-          questionType: this.questionType,
-          questionpart: this.questionPart,
-          answerOptions: this.answerOptions,
+          type: this.questionType,
+          part: this.questionPart,
+          imageUrl: '',
+          audioUrl: '',
+          answers: ansopts,
+          correctAnswer: this.correctAnswerr,
           testExam: this.$route.params.id
         }
+        console.log(ansopts)
         console.log(data)
-        this.$store.dispatch('admin/addQuestion', data)
+        await this.$store.dispatch('admin/addQuestion', data)
       } catch (error) {
         console.log(error)
       } finally {
         this.$q.loading.hide()
+        this.$router.back()
       }
     }
   }
