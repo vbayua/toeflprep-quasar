@@ -47,9 +47,8 @@
                 color="dark"
                 icon-right="post_add"
                 label="Data Soal"
-                :to="{name: 'datasoal', params: {id: items.row._id}}"
+                :to="{ name: 'datasoal', params: {id: items.row._id}}"
               />
-              <!-- BITCH -->
               <!-- </router-link> -->
 
               <q-btn

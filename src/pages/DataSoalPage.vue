@@ -6,10 +6,10 @@
     <div class="full-width">
       <q-card>
         <q-card-section>
-          {{exam.title}}
+          {{ exam.title }}
         </q-card-section>
         <q-card-section>
-          {{exam.status}}
+          {{ exam.status }}
         </q-card-section>
       </q-card>
     </div>
@@ -24,23 +24,17 @@
         dense
       >
         <template #top-right>
+          <q-btn
+            color="primary"
+            label="Tambah Data Soal"
+            :to="{ name: 'questionform', params: { id: exam._id }}"
+          />
           <q-select
             v-model="selectType"
             :options="options"
             label="Type"
             filled
           />
-          <q-input
-            v-model="filter"
-            borderless
-            dense
-            debounce="300"
-            placeholder="Search"
-          >
-            <template #append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
         </template>
         <template #body="items">
           <q-tr :props="items">
@@ -103,10 +97,17 @@
           </q-tr>
         </template>
         <template #bottom>
-          <q-btn
-            color="primary"
-            label="Tambah Data Soal"
-          />
+          <q-input
+            v-model="filter"
+            borderless
+            dense
+            debounce="300"
+            placeholder="Search"
+          >
+            <template #append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
         </template>
         <template #no-data="{ icon, message, filter }">
           <div class="full-width row flex-center text-black q-gutter-sm">
@@ -123,6 +124,15 @@
             />
           </div>
         </template>
+        <q-inner-loading
+          :showing="visible"
+          label="Fetching questions"
+        >
+          <q-spinner-gears
+            size="50px"
+            color="primary"
+          />
+        </q-inner-loading>
       </q-table>
     </div>
   </q-page>
@@ -179,25 +189,33 @@ const columns = [
 export default {
   name: 'DataSoalPage',
   setup () {
+    const visible = ref(false)
     return {
-      columns
+      columns,
+      visible
     }
   },
   data () {
     return {
       rows: ref([]),
-      exam: ref('')
+      exam: ref(''),
+      questions: ref([])
     }
   },
   mounted () {
     const id = this.$route.params.id
     this.$store.dispatch('admin/getExamWithDataSoal', id).then(response => {
       this.exam = response.data.exam
-      console.log(this.exam)
+      this.visible = true
+      this.questions.push(response.data.exam.questions)
     }).catch(error => {
       console.log(error)
+    }).finally(() => {
+      this.visible = false
     })
-    console.log(this.$route.params)
+    console.log(this.questions)
+  },
+  methods: {
   }
 }
 </script>

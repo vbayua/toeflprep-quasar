@@ -60,6 +60,17 @@ export const admin = {
           return Promise.reject(error)
         }
       )
+    },
+
+    addQuestion ({ commit }, data) {
+      return AdminService.addQuestions(data).then(
+        response => {
+          return Promise.resolve(response)
+        },
+        error => {
+          return Promise.reject(error)
+        }
+      )
     }
   },
   mutations: {
