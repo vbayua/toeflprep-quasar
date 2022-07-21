@@ -71,6 +71,25 @@ export const admin = {
           return Promise.reject(error)
         }
       )
+    },
+
+    async uploadFile (file) {
+      try {
+        const response = await AdminService.uploadFile(file)
+        return await Promise.resolve(response)
+      } catch (error) {
+        return await Promise.reject(error)
+      }
+    },
+    async getBlobInfo (file) {
+      return AdminService.getFileInfo(file).then(
+        response => {
+          return Promise.resolve(response)
+        },
+        error => {
+          return Promise.reject(error)
+        }
+      )
     }
   },
   mutations: {

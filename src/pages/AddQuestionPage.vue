@@ -88,19 +88,18 @@
             </template>
           </q-input>
           <q-btn
+            flat
             color="primary"
-            label="Click to Add Answer Options"
+            label="Add Answer Options"
             @click.prevent="onClick"
           />
-        </q-card-section>
-
-        <q-card-section v-show="answerIsAdded">
+          <q-space />
           <q-select
             v-model="correctAnswerr"
             :options="answerOptions"
+            hint="To add Correct Answer please click the button above after adding your options"
             label="Correct Answer"
             filled
-            dense
           />
         </q-card-section>
 
@@ -117,24 +116,45 @@
 
         <q-card-section v-show="questionType === 'Listening Comprehension'">
           <q-file
-            v-model="audio"
+            v-model="audiofile"
+            name="audiofile"
             clearable
             filled
+            accept=".mp3, audio/mpeg"
+            hint="Only support .mp3 audio file"
             label="Audio File"
           />
+          <!-- <q-input
+            ref="audiofile"
+            name="audiofile"
+            type="file"
+            label="audiofile"
+            @update:model-value="val => { audiofile = val[0] }"
+          /> -->
+          <!-- <q-uploader
+            color="teal"
+            flat
+            :factory="onSubmit"
+            bordered
+            max-files="1"
+            style="max-width: 300px"
+          /> -->
         </q-card-section>
 
         <q-card-section v-show="questionType">
           <div class="row">
             <q-btn
-              type="submit"
-              color="primary"
-              label="Save"
-            />
-            <q-btn
+              class="full-width"
               flat
               color="secondary"
               label="Cancel"
+              :to="{name: 'datasoal', params: { id: $route.params.id }}"
+            />
+            <q-btn
+              class="full-width"
+              type="submit"
+              color="primary"
+              label="Save"
             />
           </div>
         </q-card-section>
@@ -145,6 +165,8 @@
 
 <script>
 import { ref } from 'vue'
+import AdminService from 'src/services/admin.service'
+import { api } from 'src/boot/axios'
 export default {
   name: 'AddQuestionPage',
   setup () {
@@ -156,9 +178,10 @@ export default {
       ],
       questionPart: ref(''),
       correctAnswer: ref(''),
+      file_path: ref(null),
       partOptions: ['A', 'B', 'C'],
       // option: ref(''),
-      audio: ref(''),
+      audiofile: ref(null),
       option1: ref('Option 1'),
       option2: ref('Option 2'),
       option3: ref('Option 3'),
@@ -187,25 +210,63 @@ export default {
       // const answers = [this.option1, this.option2, this.option3, this.option4]
       // console.log(this.answerOptions)
     },
+    checkFileType (files) {
+      return files.filter(file => file.type === 'audio/mpeg')
+    },
+    onFileRejected (rejectedEntries) {
+      this.$q.notify({
+        type: 'negative',
+        message: `${rejectedEntries.length} file(s) did not pass validation constraints`
+      })
+    },
     async onSubmit () {
       try {
         this.$q.loading.show({
-          message: 'Creating new Question'
+          message: 'Adding new Question'
         })
         const ansopts = [...this.answerOptions]
-        const data = {
-          question: this.question,
-          type: this.questionType,
-          part: this.questionPart,
-          imageUrl: '',
-          audioUrl: '',
-          answers: ansopts,
-          correctAnswer: this.correctAnswerr,
-          testExam: this.$route.params.id
+
+        if (this.audiofile !== null || this.audiofile !== undefined) {
+          const filename = this.audiofile
+          const formData = new FormData()
+          formData.append('audiofile', this.audiofile)
+          await api.post('/azureBlob/upload', formData, {
+            headers: {
+              'Content-Type': 'multiform/form-data'
+            }
+          })
+
+          // console.log(blobInfo)
+          const fileinfo = await AdminService.getFileInfo(filename.name)
+          const fileUrl = await fileinfo.data.blobUrl
+
+          const data = {
+            question: this.question,
+            type: this.questionType,
+            part: this.questionPart,
+            audioUrl: fileUrl,
+            answers: ansopts,
+            correctAnswer: this.correctAnswerr,
+            testExam: this.$route.params.id
+          }
+
+          await this.$store.dispatch('admin/addQuestion', data)
+        } else {
+          const data = {
+            question: this.question,
+            type: this.questionType,
+            part: this.questionPart,
+            audioUrl: '',
+            answers: ansopts,
+            correctAnswer: this.correctAnswerr,
+            testExam: this.$route.params.id
+          }
+
+          await this.$store.dispatch('admin/addQuestion', data)
         }
-        console.log(ansopts)
-        console.log(data)
-        await this.$store.dispatch('admin/addQuestion', data)
+        // console.log(filename.name)
+        // console.log(data)
+        // console.log(this.audiofile)
       } catch (error) {
         console.log(error)
       } finally {

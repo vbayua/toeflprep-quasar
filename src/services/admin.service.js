@@ -33,5 +33,19 @@ class AdminService {
   async addQuestions (examId, questionData) {
     return await api.post(`/admin/exam/${examId}/question/add`, questionData, { headers: authHeader() })
   }
+
+  async uploadFile (file) {
+    const formData = new FormData()
+    formData.append('audiofile', file)
+    return await api.post('/azureBlob/upload', formData, {
+      headers: {
+        'Content-Type': 'multiform/form-data'
+      }
+    })
+  }
+
+  async getFileInfo (fileName) {
+    return await api.get(`/azureBlob/${fileName}`, { headers: authHeader() })
+  }
 }
 export default new AdminService()
