@@ -3,6 +3,8 @@
     padding
     class="column"
   >
+    <!-- TODO -->
+    <!-- ADD SET AS ACTIVE BUTTON TO START THE TEST -->
     <div class="full-width">
       <q-card>
         <q-card-section>
@@ -20,7 +22,7 @@
         <q-card-section>
           {{ exam.status }}
         </q-card-section>
-        <div v-if="questionData != []">
+        <div v-if="!!questions">
           <q-card-actions
             align="right"
           >

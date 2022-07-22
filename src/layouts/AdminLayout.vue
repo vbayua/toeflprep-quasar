@@ -79,7 +79,7 @@
             </q-item-section>
 
             <q-item-section>
-              Home {{ currentUserAdmin }}
+              Home
             </q-item-section>
           </q-item>
 

@@ -38,6 +38,7 @@
         <q-card-section v-show="questionType === 'Reading Comprehension'">
           <q-input
             v-model="paragraphs"
+            name="paragraphs"
             type="textarea"
             label="Reading Paragraph"
           />
@@ -177,6 +178,7 @@ export default {
         'Listening Comprehension', 'Structure and Written', 'Reading Comprehension'
       ],
       questionPart: ref(''),
+      paragraphs: ref(''),
       correctAnswer: ref(''),
       file_path: ref(null),
       partOptions: ['A', 'B', 'C'],
@@ -244,6 +246,7 @@ export default {
             question: this.question,
             type: this.questionType,
             part: this.questionPart,
+            paragraphs: this.paragraphs,
             audioUrl: fileUrl,
             answers: ansopts,
             correctAnswer: this.correctAnswerr,
@@ -256,6 +259,7 @@ export default {
             question: this.question,
             type: this.questionType,
             part: this.questionPart,
+            paragraphs: this.paragraphs,
             audioUrl: '',
             answers: ansopts,
             correctAnswer: this.correctAnswerr,
@@ -269,9 +273,17 @@ export default {
         // console.log(this.audiofile)
       } catch (error) {
         console.log(error)
+        this.$q.loading.hide()
+        this.$q.notify({
+          message: error,
+          color: 'negative'
+        })
       } finally {
         this.$q.loading.hide()
         this.$router.back()
+        this.$q.notify({
+          message: 'Add Successful'
+        })
       }
     }
   }

@@ -70,6 +70,7 @@
           <q-item
             v-ripple
             clickable
+            to="/home"
           >
             <q-item-section avatar>
               <q-icon name="home" />
@@ -85,6 +86,7 @@
           <q-item
             v-ripple
             clickable
+            to="/examlisttest"
           >
             <q-item-section avatar>
               <q-icon name="assignment" />

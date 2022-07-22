@@ -21,5 +21,9 @@ class UserService {
   async getAdminBoard () {
     return await api.get('/test/admin', { headers: authHeader() })
   }
+
+  async getExamList () {
+    return await api.get('/exam', { headers: authHeader() })
+  }
 }
 export default new UserService()
