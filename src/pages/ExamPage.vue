@@ -9,14 +9,22 @@
         <!--  -->
         <q-card class="">
           <q-card-section>
-            {{ questions[current]._id }}
-            {{ questions[current].question }}
+            <span align="right"> Question {{ current + 1 }} of {{ maxpage + 1 }} </span>
           </q-card-section>
           <q-card-section>
+            <div class="subtitle">
+              Question :
+            </div>
+            {{ questions[current].question }}
+          </q-card-section>
+          <q-card-section
+            v-for="(answerOpts, index) in questions[current].answerOptions"
+            :key="index"
+          >
             <q-radio
               v-model="response[current]"
-              :val="questions[current].answerOptions[0]"
-              :label="questions[current].answerOptions[0]"
+              :val="questions[current].answerOptions[index]"
+              :label="questions[current].answerOptions[index]"
             />
             <q-separator
               spaced
@@ -24,7 +32,7 @@
               vertical
               dark
             />
-            <q-radio
+            <!-- <q-radio
               v-model="response[current]"
               :val="questions[current].answerOptions[1]"
               :label="questions[current].answerOptions[1]"
@@ -50,7 +58,7 @@
               v-model="response[current]"
               :val="questions[current].answerOptions[3]"
               :label="questions[current].answerOptions[3]"
-            />
+            /> -->
           </q-card-section>
         </q-card>
       </div>
@@ -71,36 +79,55 @@
           label="NEXT"
           @click.prevent="nextQuestion"
         />
+        <q-separator
+          spaced
+          inset
+          vertical
+          dark
+        />
         <q-btn
           v-show="current === maxpage"
-          color="primary"
+          color="accent"
           icon="check"
           label="Finish"
-          @click="onClick"
+          @click.prevent="onFinish"
         />
       </div>
     </div>
-    {{ questions[current].answerOptions }}
-    {{ response }}
-    <span align="right"> {{ current + 1 }} / {{ maxpage + 1 }} </span>
-    <!-- <div class="q-pa-lg self-center">
-      <q-pagination
-        v-model="current"
-        color="black"
-        :max="maxpage"
-        :max-pages="6"
-        :boundary-numbers="true"
-      />
-    </div> -->
+    <q-dialog
+      v-model="confirm"
+      persistent
+    >
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">Finish and Submit Answers?</span>
+        </q-card-section>
+        <q-card-actions align="center">
+          <q-btn
+            v-close-popup
+            flat
+            label="Cancel"
+            color="primary"
+          />
+          <q-btn
+            v-close-popup
+            flat
+            label="Yes"
+            color="primary"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script>
 import { ref } from 'vue'
+import { fisherYatesDurstenfeldKnuthShuffle } from '../services/fisherYates'
 export default {
   name: 'ExamPage',
   setup () {
-    const questions = ref([
+    const questioned = [
       {
         _id: '120398213',
         question: '1lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium officia qui nam aspernatur molestiae quis ',
@@ -122,7 +149,10 @@ export default {
         answerOptions: ['option111', 'option222', 'option333', 'option4444'],
         correctAnswer: 'option222'
       }
-    ])
+    ]
+    const shuffled = fisherYatesDurstenfeldKnuthShuffle(questioned, true)
+    const shuffledAgain = fisherYatesDurstenfeldKnuthShuffle(shuffled, true)
+    const questions = ref(shuffledAgain)
     const current = ref(0)
     const isFirstIndex = ref(true)
     const isLastIndex = ref(false)
@@ -130,6 +160,7 @@ export default {
     return {
       questions,
       maxpage,
+      confirm: ref(false),
       isFirstIndex,
       isLastIndex,
       current
@@ -147,12 +178,6 @@ export default {
   },
   computed: {
     return: {
-      getCurrentQuestion () {
-        // eslint-disable-next-line prefer-const
-        let question = this.questions[this.getCurrentQuestion]
-        question.index = this.current
-        return question
-      },
       getCurrentPage () {
         return this.questions.forEach(element => {
           this.questions.indexOf(element.question)
@@ -160,16 +185,10 @@ export default {
       }
     }
   },
-  watch: {
-    response: function (newValue, oldValue) {
-      console.log(newValue, oldValue)
-    }
-  },
   mounted () {
-    this.pageOf = this.getCurrentPage
   },
   methods: {
-    nextQuestion (questionId, answerChoice) {
+    nextQuestion () {
       if (this.current === this.maxpage) {
         this.isLastIndex = true
         return this.$q.notify({
@@ -189,22 +208,34 @@ export default {
         })
       }
     },
-    onClick () {
+    async onFinish () {
       // console.log(this.answers)
-      const qs = this.questions.map(question => question._id)
-      const answerchoices = this.response.map(answer => answer)
-      const obj = []
-      for (let index = 0; index < qs.length; index++) {
-        const id = qs[index]
-        const choice = answerchoices[index] ? answerchoices[index] : ''
-        obj.push({
-          qid: id,
-          answerChoice: choice
+      try {
+        this.confirm = true
+        this.$q.loading.show({
+          message: 'Submitting your answers'
         })
+        const qs = await this.questions.map(question => question._id)
+        const answerchoices = await this.response.map(answer => answer)
+        const obj = []
+        for (let index = 0; index < qs.length; index++) {
+          const id = await qs[index]
+          const choice = await answerchoices[index] ? answerchoices[index] : ''
+          obj.push({
+            qid: id,
+            answerChoice: choice
+          })
+        }
+      } catch (error) {
+        this.$q.notify({
+          message: error
+        })
+      } finally {
+        this.$q.loading.hide()
       }
-      console.log(qs)
-      console.log(answerchoices)
-      console.log(obj)
+      // console.log(qs)
+      // console.log(answerchoices)
+      // console.log(obj)
     },
     onChange (event) {
       console.log(event.target.value)

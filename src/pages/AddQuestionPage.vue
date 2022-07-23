@@ -228,7 +228,7 @@ export default {
         })
         const ansopts = [...this.answerOptions]
 
-        if (this.audiofile !== null || this.audiofile !== undefined) {
+        if (this.audiofile) {
           const filename = this.audiofile
           const formData = new FormData()
           formData.append('audiofile', this.audiofile)

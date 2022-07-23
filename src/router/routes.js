@@ -13,6 +13,16 @@ const routes = [
   },
 
   {
+    path: '/exam',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: 'listening/:id', name: 'listeningpage', component: () => import('pages/ListeningPage.vue') },
+      { path: 'structure/:id', name: 'structurepage', component: () => import('pages/StructurePage.vue') },
+      { path: 'reading/:id', name: 'readingpage', component: () => import('pages/ReadingPage.vue') }
+    ]
+  },
+
+  {
     path: '/auth',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [

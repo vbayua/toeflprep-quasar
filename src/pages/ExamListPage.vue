@@ -28,7 +28,7 @@
                 flat
                 color="primary"
                 label="Take test"
-                :to="{name: 'exampage', params: { id: exam._id }}"
+                :to="{name: 'listeningpage', params: { id: exam._id }}"
               />
             </q-item-section>
           </q-item>

@@ -2,6 +2,7 @@ import { store } from 'quasar/wrappers'
 import { createStore } from 'vuex'
 import { auth } from './auth.module'
 import { admin } from './admin.module'
+import { exam } from './exam.module'
 
 // import example from './module-example'
 
@@ -19,6 +20,7 @@ export default store(function (/* { ssrContext } */) {
     modules: {
       //
       auth,
+      exam,
       admin
     },
 
