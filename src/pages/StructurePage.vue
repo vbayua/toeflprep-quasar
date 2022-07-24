@@ -79,10 +79,35 @@
           color="accent"
           icon="check"
           label="Finish"
-          @click.prevent="onFinish"
+          @click.prevent="onFinishConfirm"
         />
       </div>
     </div>
+    <q-dialog
+      v-model="confirm"
+      persistent
+    >
+      <q-card>
+        <q-card-section class="row items-center">
+          <span>Finish section and proceed to next section?</span>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn
+            v-close-popup
+            flat
+            label="Cancel"
+            color="primary"
+          />
+          <q-btn
+            v-close-popup
+            flat
+            label="Yes"
+            color="primary"
+            @click.prevent="onFinish"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -102,6 +127,7 @@ export default {
       isLastIndex,
       questions: ref([]),
       ansopts: ref([]),
+      confirm: ref(false),
       maxpage: ref(0),
       current
     }
@@ -142,18 +168,6 @@ export default {
     clearInterval(this.intervalId)
   },
   methods: {
-    // async fetchQuestions () {
-    //   const examId = this.$route.params.id
-    //   try {
-    //     const response = await this.$store.dispatch('exam/getStructureQuestions', examId)
-    //     this.questions = await response.data.exam.questions
-    //     this.maxpage = this.questions.length - 1
-    //   } catch (error) {
-    //     this.$q.notify({
-    //       message: `There is an error: ${error}`
-    //     })
-    //   }
-    // },
     startTimer (duration, display) {
       let timer = duration,
         // eslint-disable-next-line no-unused-vars
@@ -168,7 +182,10 @@ export default {
         this.seconds = this.seconds < 10 ? '0' + this.seconds : this.seconds
 
         if (--timer < 0) {
-          console.log('time is up')
+          this.$q.notify({
+            message: 'Time out, proceed to next section',
+            color: 'secondary'
+          })
           this.onFinish()
           clearInterval(this.intervalId)
         }
@@ -193,6 +210,9 @@ export default {
           message: 'You are already at the first page'
         })
       }
+    },
+    onFinishConfirm () {
+      this.confirm = true
     },
     async onFinish () {
       try {
@@ -223,6 +243,7 @@ export default {
               isCorrect: false
             }
             obj.push(response)
+            await this.$router.push({ name: 'readingpage', params: { id: this.$route.params.id } })
           }
         }
         console.log(qs)
