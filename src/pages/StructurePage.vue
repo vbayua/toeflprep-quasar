@@ -14,8 +14,14 @@
             <div class="text-h6">
               {{ questions[current].questionType }}
             </div>
-            {{ timerCount }}
-            <span align="right"> Question {{ current + 1 }} of {{ maxpage + 1 }} </span>
+            <div class="row justify-between">
+              <div class="self-end">
+                <span align="left"> Question {{ current + 1 }} of {{ maxpage + 1 }} </span>
+              </div>
+              <div class="self-start">
+                <span align="right">Test Duration: {{ minutes }}:{{ seconds }}s</span>
+              </div>
+            </div>
           </q-card-section>
           <q-card-section>
             <div class="subtitle">
@@ -107,26 +113,14 @@ export default {
     // const maxpage = questionData.value.length - 1
     return {
       response,
-      timerCount: 30,
+      intervalId: 0,
+      minutes: ref(''),
+      seconds: ref(''),
       // questionData,
       answers
     }
   },
   computed: {
-  },
-  watch: {
-    timerCount: {
-      handler (value) {
-        if (value > 0) {
-          setTimeout(() => {
-            this.timerCount--
-          }, 1000)
-        } else {
-          this.onFinish()
-        }
-      },
-      immediate: true
-    }
   },
   created () {
   },
@@ -141,7 +135,11 @@ export default {
     }).catch(error => {
       console.log(error)
     })
+    this.startTimer(60 * 20)
     // this.fetchQuestions()
+  },
+  beforeUnmount () {
+    clearInterval(this.intervalId)
   },
   methods: {
     // async fetchQuestions () {
@@ -156,6 +154,26 @@ export default {
     //     })
     //   }
     // },
+    startTimer (duration, display) {
+      let timer = duration,
+        // eslint-disable-next-line no-unused-vars
+        minutes,
+        // eslint-disable-next-line no-unused-vars
+        seconds
+      this.intervalId = setInterval(() => {
+        this.minutes = parseInt(timer / 60, 10)
+        this.seconds = parseInt(timer % 60, 10)
+
+        this.minutes = this.minutes < 10 ? '0' + this.minutes : this.minutes
+        this.seconds = this.seconds < 10 ? '0' + this.seconds : this.seconds
+
+        if (--timer < 0) {
+          console.log('time is up')
+          this.onFinish()
+          clearInterval(this.intervalId)
+        }
+      }, 1000)
+    },
     nextQuestion () {
       if (this.current === this.maxpage) {
         this.isLastIndex = true
