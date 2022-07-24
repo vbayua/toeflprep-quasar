@@ -30,13 +30,13 @@
             {{ questions[current].question }}
           </q-card-section>
           <q-card-section
-            v-for="(answerOpts, index) in questions[current].answerOptions"
+            v-for="(answerOpts, index) in shuffledOptions"
             :key="index"
           >
             <q-radio
               v-model="response[current]"
-              :val="questions[current].answerOptions[index]"
-              :label="questions[current].answerOptions[index]"
+              :val="questions[current].answerOptions[answerOpts]"
+              :label="questions[current].answerOptions[answerOpts]"
             />
             <q-separator
               spaced
@@ -120,13 +120,15 @@ export default {
     const current = ref(0)
     const isFirstIndex = ref(true)
     const isLastIndex = ref(false)
-    // const maxpage = questions.value.length - 1
+    const opts = fisherYatesDurstenfeldKnuthShuffle([0, 1, 2, 3])
+    const shuffledOptions = ref(opts)
     return {
       isFirstIndex,
       // maxpage,
       isLastIndex,
       questions: ref([]),
       ansopts: ref([]),
+      shuffledOptions,
       confirm: ref(false),
       maxpage: ref(0),
       current
@@ -153,8 +155,8 @@ export default {
   mounted () {
     const examId = this.$route.params.id
     this.$store.dispatch('exam/getStructureQuestions', examId).then(response => {
-      const shuffled = fisherYatesDurstenfeldKnuthShuffle(response.data.exam.questions)
-      const reshuffled = fisherYatesDurstenfeldKnuthShuffle(shuffled)
+      const shuffled = fisherYatesDurstenfeldKnuthShuffle(response.data.exam.questions, true)
+      const reshuffled = fisherYatesDurstenfeldKnuthShuffle(shuffled, true)
       this.questions = reshuffled
       console.log(this.questions[0].answerOptions)
       this.maxpage = this.questions.length - 1
@@ -223,32 +225,44 @@ export default {
         const qs = this.questions.map(question => question._id)
         const ca = this.questions.map(question => question.correctAnswer)
         const answerchoices = this.response.map(answer => answer)
+        let score = 0
+        let response = null
         const obj = []
         for (let index = 0; index < qs.length; index++) {
           const id = await qs[index]
           const choice = await answerchoices[index] ? answerchoices[index] : ''
           if (answerchoices[index] === ca[index]) {
-            const response = {
-              qid: id,
-              testExam: examId,
+            response = {
+              userId: this.$store.state.auth.user.id,
+              questionId: id,
+              examId,
               answerChoice: choice,
               isCorrect: true
             }
+            score++
             obj.push(response)
           } else {
-            const response = {
-              qid: id,
-              testExam: examId,
+            response = {
+              userId: this.$store.state.auth.user.id,
+              questionId: id,
+              examId,
               answerChoice: choice,
               isCorrect: false
             }
             obj.push(response)
-            await this.$router.push({ name: 'readingpage', params: { id: this.$route.params.id } })
           }
         }
-        console.log(qs)
-        console.log(answerchoices)
+        const data = {
+          userId: this.$store.state.auth.user.id,
+          examId,
+          structureRaw: score,
+          responses: obj
+        }
+        console.log(data)
         console.log(obj)
+        // await examService.saveNestedResponses(data)
+        await this.$store.dispatch('exam/saveResult', data)
+        await this.$router.push({ name: 'readingpage', params: { id: this.$route.params.id } })
         // Insert response to response document
         // Insert score to
         // await this.$router.push({ name: 'structurepage', params: { id: this.$route.params } })

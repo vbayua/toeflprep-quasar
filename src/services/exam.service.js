@@ -14,6 +14,10 @@ class ExamService {
     return await api.get(`/exam/${examId}/reading-questions`, { headers: authHeader() })
   }
 
+  async saveNestedResponses (data) {
+    return await api.post('/save/results', data, { headers: authHeader() })
+  }
+
   // async addListeningResponse (examId, userId) {
   //   return await api.post('')
   // }

@@ -39,13 +39,13 @@
             </audio>
           </q-card-section>
           <q-card-section
-            v-for="(answerOpts, index) in questions[current].answerOptions"
+            v-for="(answerOpts, index) in shuffledOptions"
             :key="index"
           >
             <q-radio
               v-model="response[current]"
-              :val="questions[current].answerOptions[index]"
-              :label="questions[current].answerOptions[index]"
+              :val="questions[current].answerOptions[answerOpts]"
+              :label="questions[current].answerOptions[answerOpts]"
             />
             <q-separator
               spaced
@@ -128,13 +128,15 @@ export default {
     const current = ref(0)
     const isFirstIndex = ref(true)
     const isLastIndex = ref(false)
-    // const maxpage = questions.value.length - 1
+    const opts = fisherYatesDurstenfeldKnuthShuffle([0, 1, 2, 3])
+    const shuffledOptions = ref(opts)
     return {
       isFirstIndex,
       // maxpage,
       isLastIndex,
       questions: ref([]),
       ansopts: ref([]),
+      shuffledOptions,
       confirm: ref(false),
       maxpage: ref(0),
       current
@@ -226,32 +228,41 @@ export default {
         const qs = this.questions.map(question => question._id)
         const ca = this.questions.map(question => question.correctAnswer)
         const answerchoices = this.response.map(answer => answer)
+        let response = null
+        let score = 0
         const obj = []
         for (let index = 0; index < qs.length; index++) {
           const id = await qs[index]
           const choice = await answerchoices[index] ? answerchoices[index] : ''
           if (answerchoices[index] === ca[index]) {
-            const response = {
-              qid: id,
-              testExam: examId,
+            response = {
+              userId: this.$store.state.auth.user.id,
+              questionId: id,
+              examId,
               answerChoice: choice,
               isCorrect: true
             }
+            score++
             obj.push(response)
           } else {
-            const response = {
-              qid: id,
-              testExam: examId,
+            response = {
+              userId: this.$store.state.auth.user.id,
+              questionId: id,
+              examId,
               answerChoice: choice,
               isCorrect: false
             }
             obj.push(response)
-            this.$router.push({ name: 'structurepage', params: { id: this.$route.params.id } })
           }
         }
-        console.log(qs)
-        console.log(answerchoices)
-        console.log(obj)
+        const data = {
+          userId: this.$store.state.auth.user.id,
+          examId,
+          listeningRaw: score,
+          responses: obj
+        }
+        await this.$store.dispatch('exam/saveResult', data)
+        await this.$router.push({ name: 'structurepage', params: { id: this.$route.params.id } })
         // Insert response to response document
         // Insert score to
         // await this.$router.push({ name: 'structurepage', params: { id: this.$route.params } })

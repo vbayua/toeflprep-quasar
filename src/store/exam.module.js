@@ -35,6 +35,16 @@ export const exam = {
           return Promise.reject(error)
         }
       )
+    },
+    saveResult ({ commit }, data) {
+      return examService.saveNestedResponses(data).then(
+        succeed => {
+          return Promise.resolve(succeed)
+        },
+        error => {
+          return Promise.reject(error)
+        }
+      )
     }
   },
   mutations: {
