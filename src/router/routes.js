@@ -14,7 +14,7 @@ const routes = [
 
   {
     path: '/exam',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/ExamLayout.vue'),
     children: [
       { path: 'listening/:id', name: 'listeningpage', component: () => import('pages/ListeningPage.vue') },
       { path: 'structure/:id', name: 'structurepage', component: () => import('pages/StructurePage.vue') },
