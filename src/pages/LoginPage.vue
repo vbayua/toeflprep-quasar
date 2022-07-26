@@ -35,8 +35,6 @@
               label="Username"
               :rules="usernamerules"
             />
-          </q-card-section>
-          <q-card-section>
             <q-input
               ref="passwordref"
               v-model="password"
