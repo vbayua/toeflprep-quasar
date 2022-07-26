@@ -5,11 +5,11 @@
       style="max-width: 360px"
     >
       <h5 class="text-center">
-        Register
+        Add User
       </h5>
       <q-card>
         <q-card-section>
-          <q-form @submit="handleRegister">
+          <q-form>
             <q-input
               ref="nameref"
               v-model="name"
@@ -55,7 +55,7 @@
               class="full-width"
               label="Submit"
               type="submit"
-              @click="onClick"
+              @click="handleRegister"
             />
           </q-form>
         </q-card-section>
@@ -114,28 +114,35 @@ export default {
     }
   },
   computed: {
-    loggedIn () {
-      return this.$store.state.auth.status.loggedIn
-    }
+    // loggedIn () {
+    //   return this.$store.state.auth.status.loggedIn
+    // }
   },
   created () {
-    if (this.loggedIn) {
-      this.$router.push('/home')
-    }
+    // if (this.loggedIn) {
+    //   this.$router.push('/home')
+    // }
   },
 
   methods: {
-    async handleRegister (user) {
+    async handleRegister () {
       try {
         this.$q.loading.show({
           message: 'Registering User'
         })
+        const user = {
+          username: this.username,
+          name: this.name,
+          email: this.email,
+          password: this.password
+        }
         await this.$store.dispatch('auth/register', user)
         await this.$q.notify({
           message: 'Register successful!',
           icon: 'check',
           color: 'positive'
         })
+        this.$router.push({ name: 'users' })
       } catch (error) {
         this.$q.loading.hide()
         this.$q.notify({

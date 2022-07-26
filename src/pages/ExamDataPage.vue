@@ -62,7 +62,7 @@
                 color="negative"
                 icon="delete"
                 dense
-                @click="confirm = true"
+                @click="archiveExam(items.row._id)"
               />
 
               <q-dialog
@@ -86,7 +86,7 @@
                       flat
                       label="YES"
                       color="primary"
-                      @click="deleteExam(items.row._id)"
+                      @click="archiveExam(items.row._id)"
                     />
                   </q-card-actions>
                 </q-card>
@@ -181,6 +181,7 @@ const columns = [
 ]
 import { ref } from 'vue'
 import AddExamComponentVue from 'src/components/AddExamComponent.vue'
+import AdminService from 'src/services/admin.service'
 export default {
   name: 'ExamData',
   components: {
@@ -219,12 +220,17 @@ export default {
         params: { id: examId }
       })
     },
-    async deleteExam (examId) {
+    async archiveExam (examId) {
       try {
         this.$q.loading.show({
-          message: 'Deleting'
+          message: 'Saving to archive'
         })
-        await this.$store.dispatch('admin/deleteExam', examId)
+        // const data = {
+        //   _id: examId,
+        //   status: 'archived'
+        // }
+        const status = 'archived'
+        await AdminService.updateExamStatus(examId, status)
       } catch (error) {
         this.$q.loading.hide()
         this.$q.notify({
@@ -234,8 +240,8 @@ export default {
       } finally {
         await this.$q.loading.hide()
         this.$q.notify({
-          message: 'Delete successful',
-          color: 'positive'
+          message: 'Moved to archive',
+          color: 'secondary'
         })
         location.reload()
       }

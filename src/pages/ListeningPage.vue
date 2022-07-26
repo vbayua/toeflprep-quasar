@@ -4,11 +4,11 @@
     class="column"
   >
     <!--  -->
-    <div class="row justify-center">
-      <div
-        v-if="questions.length > 0"
-        class="full-width"
-      >
+    <div
+      v-if="questions.length > 0"
+      class="row justify-center"
+    >
+      <div class="full-width">
         <q-card class="full-width">
           <q-card-section>
             <div class="text-h6">
@@ -56,40 +56,47 @@
           </q-card-section>
         </q-card>
       </div>
-      <div v-else>
-        NO DATA
+      <div class="column self-center">
+        <div class="row">
+          <q-btn
+            v-show="current > 0"
+            color="primary"
+            icon="arrow_left"
+            label="PREVIOUS"
+            @click.prevent="previousQuestion"
+          />
+          <q-btn
+            v-show="current !== maxpage"
+            color="primary"
+            icon-right="arrow_right"
+            label="NEXT"
+            @click.prevent="nextQuestion"
+          />
+          <q-separator
+            spaced
+            inset
+            vertical
+            dark
+          />
+          <q-btn
+            v-show="current === maxpage"
+            color="accent"
+            icon="check"
+            label="Finish"
+            @click.prevent="onFinishConfirm"
+          />
+        </div>
       </div>
     </div>
-    <div class="column self-center">
-      <div class="row">
-        <q-btn
-          v-show="current > 0"
-          color="primary"
-          icon="arrow_left"
-          label="PREVIOUS"
-          @click.prevent="previousQuestion"
-        />
-        <q-btn
-          v-show="current !== maxpage"
-          color="primary"
-          icon-right="arrow_right"
-          label="NEXT"
-          @click.prevent="nextQuestion"
-        />
-        <q-separator
-          spaced
-          inset
-          vertical
-          dark
-        />
-        <q-btn
-          v-show="current === maxpage"
-          color="accent"
-          icon="check"
-          label="Finish"
-          @click.prevent="onFinishConfirm"
-        />
-      </div>
+    <div v-else>
+      NO DATA
+      <q-btn
+        flat
+        dense
+        color="primary"
+        label="Back Home"
+        to="/home"
+      />
     </div>
     <q-dialog
       v-model="confirm"
@@ -166,6 +173,9 @@ export default {
       this.maxpage = this.questions.length - 1
     }).catch(error => {
       console.log(error)
+      this.$q.notify({
+        message: error
+      })
     })
     this.startTimer(60 * 20)
   },

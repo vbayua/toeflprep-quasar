@@ -4,9 +4,11 @@
     class="column"
   >
     <!--  -->
-    <div class="row justify-center">
+    <div
+      v-if="questions.length > 0"
+      class="row justify-center"
+    >
       <div
-        v-if="questions.length > 0"
         class="full-width"
       >
         <q-card class="full-width">
@@ -52,41 +54,47 @@
           </q-card-section>
         </q-card>
       </div>
-      <div v-else>
-        NO DATA
+      <div class="column self-center">
+        <div class="row">
+          <q-btn
+            v-show="current > 0"
+            color="primary"
+            icon="arrow_left"
+            label="PREVIOUS"
+            @click.prevent="previousQuestion"
+          />
+          <q-btn
+            v-show="current !== maxpage"
+            color="primary"
+            icon-right="arrow_right"
+            label="NEXT"
+            @click.prevent="nextQuestion"
+          />
+          <q-separator
+            spaced
+            inset
+            vertical
+            dark
+          />
+          <q-btn
+            v-show="current === maxpage"
+            color="accent"
+            icon="check"
+            label="Finish"
+            @click.prevent="onFinishConfirm"
+          />
+        </div>
       </div>
-      {{ response }}
     </div>
-    <div class="column self-center">
-      <div class="row">
-        <q-btn
-          v-show="current > 0"
-          color="primary"
-          icon="arrow_left"
-          label="PREVIOUS"
-          @click.prevent="previousQuestion"
-        />
-        <q-btn
-          v-show="current !== maxpage"
-          color="primary"
-          icon-right="arrow_right"
-          label="NEXT"
-          @click.prevent="nextQuestion"
-        />
-        <q-separator
-          spaced
-          inset
-          vertical
-          dark
-        />
-        <q-btn
-          v-show="current === maxpage"
-          color="accent"
-          icon="check"
-          label="Finish"
-          @click.prevent="onFinishConfirm"
-        />
-      </div>
+    <div v-else>
+      NO DATA
+      <q-btn
+        flat
+        dense
+        color="primary"
+        label="Back Home"
+        to="/home"
+      />
     </div>
     <q-dialog
       v-model="confirm"
@@ -251,14 +259,16 @@ export default {
             obj.push(response)
           }
         }
+        const date = new Date().toISOString().slice(0, 10)
         const data = {
           userId: this.$store.state.auth.user.id,
           examId,
           readingRaw: score,
+          date,
           responses: obj
         }
         await this.$store.dispatch('exam/saveResult', data)
-        await this.$router.push({ name: 'finish', params: { id: this.$route.params.id } })
+        await this.$router.push({ name: 'finishpage', params: { id: this.$route.params.id } })
       } catch (error) {
         this.$q.notify({
           message: error

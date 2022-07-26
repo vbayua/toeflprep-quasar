@@ -5,7 +5,10 @@
         404
       </div>
 
-      <div class="text-h2" style="opacity:.4">
+      <div
+        class="text-h2"
+        style="opacity:.4"
+      >
         Oops. Nothing here...
       </div>
 
@@ -14,9 +17,9 @@
         color="white"
         text-color="blue"
         unelevated
-        to="/"
         label="Go Home"
         no-caps
+        @click="goHome"
       />
     </div>
   </div>
@@ -26,6 +29,20 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'ErrorNotFound'
+  name: 'ErrorNotFound',
+  computed: {
+    userRoles () {
+      return this.$store.state.auth.user.roles[0]
+    }
+  },
+  methods: {
+    async goHome () {
+      if (this.userRoles === 'admin') {
+        this.$router.push('/admin')
+      } else {
+        this.$router.push('/home')
+      }
+    }
+  }
 })
 </script>

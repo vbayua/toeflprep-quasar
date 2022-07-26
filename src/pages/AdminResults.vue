@@ -29,7 +29,7 @@
                   flat
                   color="primary"
                   label="View Result"
-                  :to="{name: 'result', params: { id: exam._id }}"
+                  :to="{name: 'resultlist', params: { id: exam._id }}"
                 />
               </q-item-section>
             </q-item>
@@ -54,7 +54,7 @@
 import { ref } from 'vue'
 import userService from 'src/services/user.service'
 export default {
-  name: 'ExamResultsList',
+  name: 'AdminResults',
   setup () {
   },
   data () {

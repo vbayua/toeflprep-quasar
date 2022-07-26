@@ -34,6 +34,14 @@ class AdminService {
     return await api.post(`/admin/exam/${examId}/question/add`, questionData, { headers: authHeader() })
   }
 
+  async getQuestion (questionId) {
+    return await api.get(`admin/exam/question/${questionId}`, { headers: authHeader() })
+  }
+
+  async updateQuestion (questionId, data) {
+    return await api.post(`admin/exam/question/${questionId}/update`, data, { headers: authHeader() })
+  }
+
   async uploadFile (file) {
     const formData = new FormData()
     formData.append('audiofile', file)
@@ -46,6 +54,18 @@ class AdminService {
 
   async getFileInfo (fileName) {
     return await api.get(`/azureBlob/${fileName}`, { headers: authHeader() })
+  }
+
+  async getExamResults (examId) {
+    return await api.get(`/admin/exam/results/${examId}`, { headers: authHeader() })
+  }
+
+  async updateExamStatus (examId, status) {
+    return await api.post(`/admin/exam/status/${examId}?status=${status}`, status, { headers: authHeader() })
+  }
+
+  async deleteQuestion (questionId) {
+    return await api.delete(`/admin/question/${questionId}`, { headers: authHeader() })
   }
 }
 export default new AdminService()

@@ -1,3 +1,4 @@
+import userService from 'src/services/user.service'
 import AdminService from '../services/admin.service'
 
 export const admin = {
@@ -62,6 +63,28 @@ export const admin = {
       )
     },
 
+    setExamStatus ({ commit }, data) {
+      return AdminService.updateExamStatus(data._id, data.status).then(
+        exam => {
+          return Promise.resolve(exam)
+        },
+        error => {
+          return Promise.reject(error)
+        }
+      )
+    },
+
+    getExamResults ({ commit }, data) {
+      return AdminService.getExamResults(data.examId).then(
+        result => {
+          return Promise.resolve(result)
+        },
+        error => {
+          return Promise.reject(error)
+        }
+      )
+    },
+
     addQuestion ({ commit }, data) {
       return AdminService.addQuestions(data.testExam, data).then(
         response => {
@@ -71,6 +94,26 @@ export const admin = {
           return Promise.reject(error)
         }
       )
+    },
+
+    async updateQuestion ({ commit }, data) {
+      return AdminService.updateQuestion().then(
+        response => {
+          return Promise.resolve(response)
+        },
+        error => {
+          return Promise.reject(error)
+        }
+      )
+    },
+
+    async getAllUsers ({ commit }) {
+      try {
+        const users = userService.getAllUsers()
+        return await Promise.resolve(users)
+      } catch (error) {
+        return await Promise.reject(error)
+      }
     },
 
     async uploadFile (file) {

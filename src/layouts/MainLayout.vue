@@ -100,6 +100,7 @@
           <q-item
             v-ripple
             clickable
+            to="/results"
           >
             <q-item-section avatar>
               <q-icon name="assignment_turned_in" />
@@ -142,7 +143,10 @@ export default defineComponent({
   methods: {
     async logout () {
       await this.$store.dispatch('auth/logout')
-      await this.$router.push('/')
+      await this.$router.push('/auth/login')
+    },
+    async logoutMe () {
+
     }
   }
 })

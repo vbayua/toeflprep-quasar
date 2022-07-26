@@ -114,11 +114,11 @@
           </q-item>
 
           <q-separator />
-
+          <!--
           <q-item
             v-ripple
             clickable
-            to="/admin/students-data"
+            :to="{ name: 'users'}"
           >
             <q-item-section avatar>
               <q-icon name="groups" />
@@ -127,7 +127,7 @@
             <q-item-section>
               Data Mahasiswa
             </q-item-section>
-          </q-item>
+          </q-item>-->
         </q-list>
       </q-scroll-area>
     </q-drawer>
@@ -170,7 +170,7 @@ export default defineComponent({
           message: 'Signing out'
         })
         await this.$store.dispatch('auth/logout')
-        await this.$router.push('/')
+        await this.$router.push('/auth/login')
       } catch (error) {
         this.$q.loading.hide()
         this.$q.notify({

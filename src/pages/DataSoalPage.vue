@@ -30,6 +30,13 @@
               flat
               color="secondary"
               label="Set as Active"
+              @click.prevent="setActive(exam._id)"
+            />
+            <q-btn
+              flat
+              color="secondary"
+              label="Set as Inactive"
+              @click.prevent="setInactive(exam._id)"
             />
           </q-card-actions>
         </div>
@@ -74,23 +81,10 @@
             </q-td>
 
             <q-td
-              key="question_id"
-              :props="items"
-            >
-              {{ items.row._id }}
-            </q-td>
-            <q-td
               key="questionType"
               :props="items"
             >
               {{ items.row.questionType }}
-            </q-td>
-
-            <q-td
-              key="questionPart"
-              :props="items"
-            >
-              {{ items.row.questionPart }}
             </q-td>
 
             <q-td
@@ -118,6 +112,7 @@
                 color="secondary"
                 icon="edit"
                 dense
+                :to="{name: 'editquestionform', params: { id: exam._id, qid: items.row._id }}"
               />
 
               <q-btn
@@ -126,6 +121,7 @@
                 color="negative"
                 icon="delete"
                 dense
+                @click.prevent="onDelete(items.row._id)"
               />
             </q-td>
           </q-tr>
@@ -136,6 +132,7 @@
 </template>
 
 <script>
+import AdminService from 'src/services/admin.service'
 import { ref } from 'vue'
 const columns = [
   {
@@ -146,27 +143,11 @@ const columns = [
     sortable: true
   },
   {
-    name: 'question_id',
-    align: 'right',
-    label: 'QuestionID',
-    field: '_id',
-    sortable: true
-
-  },
-  {
     name: 'questionType',
     align: 'right',
     label: 'Type',
     field: 'questionType',
     sortable: true
-  },
-  {
-    name: 'questionPart',
-    align: 'right',
-    label: 'Part',
-    field: 'questionPart',
-    sortable: true
-
   },
   {
     name: 'correctAnswer',
@@ -225,6 +206,98 @@ export default {
   methods: {
     showOptions () {
       this.showAnswers = true
+    },
+
+    async onDelete (id) {
+      try {
+        await AdminService.deleteQuestion(id)
+        location.reload()
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    async setInactive (examId) {
+      try {
+        const status = 'inactive'
+        await AdminService.updateExamStatus(examId, status)
+        location.reload()
+      } catch (error) {
+        this.$q.notify({
+          message: error.message,
+          color: 'negative'
+        })
+      }
+    },
+
+    async setActive (examId) {
+      try {
+        this.$q.loading.show({
+          message: 'Processing'
+        })
+        const listeningQuestions = await this.$store.dispatch('exam/getListeningQuestions', examId)
+        const structureQuestions = await this.$store.dispatch('exam/getStructureQuestions', examId)
+        const readingQuestions = await this.$store.dispatch('exam/getReadingQuestions', examId)
+
+        const listeningAmount = listeningQuestions.data.exam.questions.length
+        const structureAmount = structureQuestions.data.exam.questions.length
+        const readingAmount = readingQuestions.data.exam.questions.length
+
+        const checkListen = await this.checkListening(listeningAmount)
+        const checkStruct = await this.checkStructure(structureAmount)
+        const checkRead = await this.checkReading(readingAmount)
+
+        if (checkListen && checkStruct && checkRead) {
+          const status = 'active'
+          await AdminService.updateExamStatus(examId, status)
+          this.$q.notify({
+            message: 'Test Published',
+            color: 'primary'
+          })
+          location.reload()
+        }
+      } catch (error) {
+        this.$q.loading.hide()
+        this.$q.notify({
+          message: `Error : ${error.message}`,
+          color: 'negative'
+        })
+      } finally {
+        await this.$q.loading.hide()
+      }
+    },
+
+    async checkListening (listeningAmount) {
+      if (listeningAmount <= 0 || listeningAmount > 30 || listeningAmount < 30) {
+        this.$q.notify({
+          message: 'Listening Questions must not be empty or less than 30'
+        })
+        return false
+      } else if (listeningAmount === 30) {
+        return true
+      }
+    },
+
+    async checkStructure (structureAmount) {
+      if (structureAmount <= 0 || structureAmount > 25 || structureAmount < 25) {
+        this.$q.notify({
+          message: 'Structure and Written Questions must not be empty or less than 30'
+        })
+        return false
+      } else if (structureAmount === 25) {
+        return true
+      }
+    },
+
+    async checkReading (readingAmount) {
+      if (readingAmount <= 0 || readingAmount > 40 || readingAmount < 40) {
+        this.$q.notify({
+          message: 'Reading Questions must not be empty or less than 30'
+        })
+        return false
+      } else if (readingAmount === 40) {
+        return true
+      }
     }
   }
 }

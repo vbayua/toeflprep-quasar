@@ -10,8 +10,11 @@
         class="column"
       >
         <div class="q-mt-md text-center text-h5">
-          <span>
-            Login
+          <div class="text-h6 text-blue-10">
+            TOEFL PREPARATION
+          </div>
+          <span class="text-subtitle1 text-blue-12">
+            Log In
           </span>
         </div>
         <q-separator

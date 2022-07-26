@@ -22,6 +22,10 @@ class UserService {
     return await api.get('/test/admin', { headers: authHeader() })
   }
 
+  async getAllUsers () {
+    return await api.get('/admin/usersmhs', { headers: authHeader() })
+  }
+
   async getExamList () {
     return await api.get('/exam', { headers: authHeader() })
   }

@@ -15,6 +15,7 @@
     "axios": "^0.21.1",
     "quasar": "^2.6.0",
     "vue": "^3.0.0",
+    "vue-html-to-paper": "^1.4.4",
     "vue-router": "^4.0.0",
     "vuex": "^4.0.1"
   },
@@ -27,7 +28,14 @@
     "eslint-plugin-import": "^2.19.1",
     "eslint-plugin-n": "^15.0.0",
     "eslint-plugin-promise": "^6.0.0",
-    "eslint-plugin-vue": "^9.0.0"
+    "eslint-plugin-vue": "^9.0.0",
+    "workbox-build": "^6.5.3",
+    "workbox-cacheable-response": "^6.5.3",
+    "workbox-core": "^6.5.3",
+    "workbox-expiration": "^6.5.3",
+    "workbox-precaching": "^6.5.3",
+    "workbox-routing": "^6.5.3",
+    "workbox-strategies": "^6.5.3"
   },
   "engines": {
     "node": "^18 || ^16 || ^14.19",

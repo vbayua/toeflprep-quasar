@@ -27,7 +27,7 @@ export default route(function (/* { store, ssrContext } */) {
   })
 
   Router.beforeEach((to, from, next) => {
-    const publicPages = ['/auth/login', '/auth/register', '/home']
+    const publicPages = ['/auth/login', '/auth/register']
     const authRequired = !publicPages.includes(to.path)
     const loggedIn = localStorage.getItem('user')
     if (authRequired && !loggedIn) {

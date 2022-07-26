@@ -1,3 +1,4 @@
+import adminService from 'src/services/admin.service'
 import examService from 'src/services/exam.service'
 export const exam = {
   namespaced: true,
@@ -40,6 +41,36 @@ export const exam = {
       return examService.saveNestedResponses(data).then(
         succeed => {
           return Promise.resolve(succeed)
+        },
+        error => {
+          return Promise.reject(error)
+        }
+      )
+    },
+    getUserResults (data) {
+      return examService.getUserResults(data.userId).then(
+        result => {
+          return Promise.resolve(result)
+        },
+        error => {
+          return Promise.reject(error)
+        }
+      )
+    },
+    getUserExamResult (data) {
+      return examService.getUserExamResult(data).then(
+        result => {
+          return Promise.resolve(result)
+        },
+        error => {
+          return Promise.reject(error)
+        }
+      )
+    },
+    getExamResults (data) {
+      return adminService.getExamResults(data.examId).then(
+        result => {
+          return Promise.resolve(result)
         },
         error => {
           return Promise.reject(error)
