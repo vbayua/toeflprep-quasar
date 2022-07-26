@@ -1,11 +1,30 @@
 <template>
   <q-page
-    class="row"
+    class="flex flex-center"
     padding
   >
-    <div>
-      <h2>Home</h2>
-      <h3>Mahasiswa</h3>
+    <!-- content -->
+    <div class="column q-gutter-md q-mr-sm">
+      <q-btn
+        color="primary"
+        icon="article"
+        label="Preparation Test"
+        :to="{ name: 'examlist' }"
+        stack
+        class="col-12 col-md text-h6"
+        style="width: 300px;max-width: 300px"
+        @click="onClick"
+      />
+
+      <q-btn
+        color="primary"
+        icon="assignment_turned_in"
+        label="Hasil"
+        :to="{ name: 'results' }"
+        stack
+        class="col-12 col-md text-h6"
+        @click="onClick"
+      />
     </div>
   </q-page>
 </template>

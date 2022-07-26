@@ -105,17 +105,6 @@
         </q-card-section>
 
         <q-card-section v-show="questionType === 'Listening Comprehension'">
-          <q-select
-            v-model="questionPart"
-            transition-show="jump-up"
-            transition-hide="jump-up"
-            label="Question Part"
-            filled
-            :options="partOptions"
-          />
-        </q-card-section>
-
-        <q-card-section v-show="questionType === 'Listening Comprehension'">
           <q-file
             v-model="audiofile"
             name="audiofile"
@@ -245,7 +234,6 @@ export default {
           const data = {
             question: this.question,
             type: this.questionType,
-            part: this.questionPart,
             paragraphs: this.paragraphs,
             audioUrl: fileUrl,
             answers: ansopts,
@@ -258,7 +246,6 @@ export default {
           const data = {
             question: this.question,
             type: this.questionType,
-            part: this.questionPart,
             paragraphs: this.paragraphs,
             audioUrl: '',
             answers: ansopts,

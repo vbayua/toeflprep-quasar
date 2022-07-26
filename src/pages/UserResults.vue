@@ -1,13 +1,8 @@
 <template>
   <q-page padding>
-    <q-card class="my-card">
-      <q-card-section>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit
-      </q-card-section>
-    </q-card>
     <div>
       <q-table
-        title="Data Hasil Mahasiswa"
+        title="Data Hasil TOEFL Preparation"
         :rows="results"
         :columns="columns"
         row-key="date"
